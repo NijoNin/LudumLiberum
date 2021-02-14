@@ -1,0 +1,20 @@
+{
+  "name": "ludumliberum",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "epic-games-store-crawler": "^0.2.1",
+    "sqlite3": "^5.0.1"
+  }
+}
