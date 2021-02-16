@@ -14,7 +14,8 @@
     "cron": "^1.8.2",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
-    "epic-games-store-crawler": "^0.2.1",
-    "sqlite3": "^5.0.1"
+    "epic-games-store-crawler": "github:NijoNin/epic-games-store-crawler",
+    "node": "^14.15.1",
+    "sqlite3": "^5.0.2"
   }
 }

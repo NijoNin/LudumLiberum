@@ -16,7 +16,7 @@ const urlExt = process.env.PART_URL;
 
 const prefix = process.env.PREFIX;
 
-var countryLocale = "en-NZ";
+var countryLocale = "en-US";
 
 const game = {
 
@@ -126,6 +126,7 @@ function setGameData (res){
     for (var i in games){
         if (games[i].promotions !== null && games[i].price.totalPrice.discountPrice === 0) {
             // Arrange game info
+            console.log(games[i]);
             game.title = games[i].title;
             game.expiryDate = games[i].promotions.promotionalOffers[0].promotionalOffers[0].endDate;
             game.webURL = url + countryLocale + urlExt + games[i].productSlug;
