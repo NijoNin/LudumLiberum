@@ -1,0 +1,98 @@
+diff --git a/node_modules/epic-games-store-crawler/dist/const/query.js b/node_modules/epic-games-store-crawler/dist/const/query.js
+index e9b300a..9952592 100644
+--- a/node_modules/epic-games-store-crawler/dist/const/query.js
++++ b/node_modules/epic-games-store-crawler/dist/const/query.js
+@@ -2,9 +2,89 @@
+ Object.defineProperty(exports, "__esModule", { value: true });
+ var Query;
+ (function (Query) {
+-    Query["Catalog"] = "\n    query searchStoreQuery(\n      $allowCountries: String, $category: String, $count: Int, $country: String!,\n      $keywords: String, $locale: String, $namespace: String, $itemNs: String,\n      $sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String) { \n        Catalog { \n          searchStore (allowCountries: $allowCountries, category: $category, count: $count, country: $country\n            keywords: $keywords, locale: $locale, namespace: $namespace, itemNs: $itemNs,\n            sortBy: $sortBy, sortDir: $sortDir, start: $start, tag: $tag, releaseDate: $releaseDate) {\n              elements {\n                title id namespace description\n                seller {\n                  name\n                }\n                price (country: $country) {\n                  totalPrice {\n                    discountPrice originalPrice voucherDiscount discount currencyCode\n                    currencyInfo {\n                      decimals\n                    }\n                  }\n                }\n                promotions {\n                  promotionalOffers {\n                    promotionalOffers {\n                      startDate endDate\n                    }\n                  }\n                }\n              }\n            }\n        } \n    } \n  ";
+-    Query["CatalogTags"] = "\n    query catalogTags($namespace: String, $locale: String, $start: Int, $count: Int) {\n      Catalog {\n        tags (namespace: $namespace, locale: $locale, start: $start, count: $count) {\n          elements {\n            aliases id name referenceCount status\n          }\n        }\n      }\n    }\n  ";
+-    Query["FreeCatalog"] = "\n    query searchStoreQuery(\n      $allowCountries: String, $count: Int, $country: String!,\n      $keywords: String, $locale: String, $namespace: String, $itemNs: String,\n      $sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String) { \n        Catalog { \n          searchStore (allowCountries: $allowCountries, category: \"freegames\", count: $count, country: $country\n            keywords: $keywords, locale: $locale, namespace: $namespace, itemNs: $itemNs,\n            sortBy: $sortBy, sortDir: $sortDir, start: $start, tag: $tag, releaseDate: $releaseDate) {\n              elements {\n                title id namespace description\n                seller {\n                  name\n                }\n                price (country: $country) {\n                  totalPrice {\n                    discountPrice originalPrice voucherDiscount discount currencyCode\n                    currencyInfo {\n                      decimals\n                    }\n                  }\n                }\n                promotions {\n                  promotionalOffers {\n                    promotionalOffers {\n                      startDate endDate\n                    }\n                  }\n                }\n              }\n            }\n        } \n    }\n  ";
++    Query["Catalog"] = `
++    query searchStoreQuery(
++      $allowCountries: String, $category: String, $count: Int, $country: String!,
++      $keywords: String, $locale: String, $namespace: String, $itemNs: String,
++      $sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String) { 
++        Catalog { 
++          searchStore (allowCountries: $allowCountries, category: $category, count: $count, country: $country
++            keywords: $keywords, locale: $locale, namespace: $namespace, itemNs: $itemNs,
++            sortBy: $sortBy, sortDir: $sortDir, start: $start, tag: $tag, releaseDate: $releaseDate) {
++              elements {
++                title id namespace description
++                seller {
++                  name
++                }
++                price (country: $country) {
++                  totalPrice {
++                    discountPrice originalPrice voucherDiscount discount currencyCode
++                    currencyInfo {
++                      decimals
++                    }
++                  }
++                }
++                promotions {
++                  promotionalOffers {
++                    promotionalOffers {
++                      startDate endDate
++                    }
++                  }
++                }
++              }
++            }
++        } 
++    } 
++  `;
++    Query["CatalogTags"] = `
++    query catalogTags($namespace: String, $locale: String, $start: Int, $count: Int) {
++      Catalog {
++        tags (namespace: $namespace, locale: $locale, start: $start, count: $count) {
++          elements {
++            aliases id name referenceCount status
++          }
++        }
++      }
++    }
++  `;
++    Query["FreeCatalog"] = `
++    query searchStoreQuery(
++      $allowCountries: String, $count: Int, $country: String!,
++      $keywords: String, $locale: String, $namespace: String, $itemNs: String,
++      $sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String) { 
++        Catalog { 
++          searchStore (allowCountries: $allowCountries, category: "freegames", count: $count, country: $country
++            keywords: $keywords, locale: $locale, namespace: $namespace, itemNs: $itemNs,
++            sortBy: $sortBy, sortDir: $sortDir, start: $start, tag: $tag, releaseDate: $releaseDate) {
++              elements {
++                title id namespace description
++                keyImages {
++                  type url
++                }
++                seller {
++                  name
++                }
++                productSlug
++                price (country: $country) {
++                  totalPrice {
++                    discountPrice originalPrice voucherDiscount discount currencyCode
++                    currencyInfo {
++                      decimals
++                    }
++                  }
++                }
++                promotions {
++                  promotionalOffers {
++                    promotionalOffers {
++                      startDate endDate
++                    }
++                  }
++                }
++              }
++            }
++        } 
++    }
++  `;
+ })(Query || (Query = {}));
+ exports.default = Query;
+ //# sourceMappingURL=query.js.map
+\ No newline at end of file
