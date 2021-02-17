@@ -96,7 +96,13 @@ bot.on("message", async function(msg) {
             setChannel(msg);
             break;
         case "help":
-            msg.channel.send("`LL!setChannel` or `LL!sc` to set the channel for the bot messages (ADMIN ONLY)");
+            printHelpMenu(msg);
+            break;
+        case "free":
+        case "f":
+        case "game":
+        case "g":
+            msg.channel.send(await createEmbed());
             break;
     }
 });
@@ -263,11 +269,20 @@ function saveToDB (guild, channel){
     });
 }
 
-// // Cron scheduled job at 6am every friday
-// var job = new CronJob('0 6 * * FRI', function () {
-
-//     checkFreeGame();
-// }, null, true, 'Pacific/Auckland');
-// job.start();
+function printHelpMenu(message) {
+    const { member } = message;
+    const helpMenu = new Discord.MessageEmbed()
+        .setColor('#4296f5')
+        .setTitle("Command List")
+        .setFooter("use the prefix " + prefix + " along with the commands above (e.g. '" + prefix + "free')")
+        .addFields([
+            {name: "free / game / f / g", value: "Gets the free game from epic games store"}
+        ]);
+    if (member.hasPermission('ADMINISTRATOR')){
+        helpMenu.addFields([{name: "setChannel / sc", value: "Set the channel for bot messages (ADMIN ONLY)"}]);
+    }
+    helpMenu.addFields([{name: '\u200B', value: '\u200B'}]);
+    message.channel.send(helpMenu);
+}
 
 bot.login(token);
