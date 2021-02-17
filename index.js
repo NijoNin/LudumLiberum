@@ -72,6 +72,7 @@ bot.on('guildDelete', async (guild) => {
 });
 
 bot.on('ready', async () => {
+    bot.user.setActivity(`LL!help`);
     // Cron scheduled job at 6am every friday "0 6 * * FRI"
     var job = new CronJob('0 6 * * FRI', function () {
         perServerSend();
