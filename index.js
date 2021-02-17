@@ -61,7 +61,7 @@ bot.on('guildDelete', async (guild) => {
     db.serialize(function () {
         db.run(`DELETE FROM guilds WHERE guild_id = ?`, guild.id, (err) => {
             if (err) console.log(err);
-            console.log(`Deleted ${$guild.name} (${this.changes} row) from the database.`);
+            console.log(`Deleted ${guild.name} (${this.changes} row) from the database.`);
             db.close((err) => {
                 if (err) {
                 return console.error(err.message);
@@ -72,6 +72,7 @@ bot.on('guildDelete', async (guild) => {
 });
 
 bot.on('ready', async () => {
+    bot.user.setActivity(`LL!help`);
     // Cron scheduled job at 6am every friday "0 6 * * FRI"
     var job = new CronJob('0 6 * * FRI', function () {
         perServerSend();
