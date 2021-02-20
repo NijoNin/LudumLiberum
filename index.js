@@ -18,7 +18,7 @@ const prefix = process.env.PREFIX;
 
 var countryLocale = "en-US";
 
-const game = [];
+const game = []; //PROBLEM: when bot stays on the push function continously adds new games everytime it pushes when a command is used
 
 const cache = {};
 
@@ -205,8 +205,9 @@ async function sendMultiple (channel){
     
     for (var i in game){
         // create and get embed function? create for before the for function and get for send function
-        channel.send(await createEmbed(i));
+        await channel.send(await createEmbed(i));
     }
+    game.length = 0;
 }
 
 function getChannel (guild){
