@@ -18,14 +18,7 @@ const prefix = process.env.PREFIX;
 
 var countryLocale = "en-US";
 
-const game = {
-
-    title: "",
-    imgURL: "",
-    webURL: "",
-    expiryDate: null,
-
-}
+const game = [];
 
 const cache = {};
 
@@ -72,13 +65,21 @@ bot.on('guildDelete', async (guild) => {
 });
 
 bot.on('ready', async () => {
-    bot.user.setActivity(`LL!help`);
+    bot.user.setActivity(`${prefix}help`);
+
+    // LEAVE HERE FOR NOW
     // Cron scheduled job at 6am every friday "0 6 * * FRI"
-    var job = new CronJob('0 6 * * FRI', function () {
-        perServerSend();
-    }, null, true, 'Pacific/Auckland');
-    job.start();
+    // var job = new CronJob('25 22 * * FRI', function () {
+    //     perServerSend();
+    // }, null, true, 'Pacific/Auckland');
+    // job.start();
 });
+
+// Cron scheduled job at 6am every friday "0 6 * * FRI"
+var job = new CronJob('0 6 * * FRI', function () {
+    perServerSend();
+}, null, true, 'Pacific/Auckland');
+job.start();
 
 bot.on("message", async function(msg) {
 
@@ -102,7 +103,8 @@ bot.on("message", async function(msg) {
         case "f":
         case "game":
         case "g":
-            msg.channel.send(await createEmbed());
+            await getGameData();
+            sendMultiple(msg.channel);
             break;
     }
 });
@@ -114,6 +116,7 @@ bot.on("message", async function(msg) {
 
 async function getGameData(){
     try{
+        console.log("finding game data");
         var country = countryLocale.split('-').pop();
         var lang = countryLocale.split('-').shift();
         const response = await crawler.getFreeGames({
@@ -121,43 +124,52 @@ async function getGameData(){
             country: country,
             locale: countryLocale
         });
-        setGameData(response);
+        console.log("games found");
+        await setGameData(response);
     } catch (err){
         console.log(err)
     }
 }
 
-function setGameData (res){
+async function setGameData (res){
     var games = res.Catalog.searchStore.elements;
     // Find specific game
+    var k = 0;
     for (var i in games){
         if (games[i].promotions !== null && games[i].price.totalPrice.discountPrice === 0) {
             // Arrange game info
             console.log(games[i]);
-            game.title = games[i].title;
-            game.expiryDate = games[i].promotions.promotionalOffers[0].promotionalOffers[0].endDate;
-            game.webURL = url + countryLocale + urlExt + games[i].productSlug;
+            let imgURL;
             for (var j in games[i].keyImages){
                 if (games[i].keyImages[j].type === "OfferImageWide"){
-                    game.imgURL = games[i].keyImages[j].url;
+                    imgURL = games[i].keyImages[j].url;
                 }
             }
-            console.log(game.title + " game object has been created");
+            game.push({
+                title: games[i].title,
+                expiryDate: games[i].promotions.promotionalOffers[0].promotionalOffers[0].endDate,
+                webURL: url + countryLocale + urlExt + games[i].productSlug,
+                imgURL: imgURL
+            })
+            console.log(game[k++].title + " game object has been created");
         }
     }   
 }
 
+module.exports.gameCheckTest = function (){
+    getGameData();
+}
+
 //"2021-01-29T16:00:00.000Z"
-async function createEmbed(){
+async function createEmbed(i){
     //Add info into Embed
-    await getGameData();
     freeGameEmbed = new Discord.MessageEmbed()
     .setColor('#4296f5')
-    .setTitle(game.title)
-    .setURL(game.webURL)
+    .setTitle(game[i].title)
+    .setURL(game[i].webURL)
     .setDescription("⬆️ Free Now on Epic Games Store ⬆️")
-    .setImage(game.imgURL)
-    .setTimestamp(new Date(game.expiryDate))
+    .setImage(game[i].imgURL)
+    .setTimestamp(new Date(game[i].expiryDate))
     .setFooter("Free until");
     console.log("Created Embed");
     return freeGameEmbed;
@@ -173,7 +185,6 @@ async function perServerSend(){
 }
 
 async function sendFreeGame (guild) {
-
     console.log(guild.name);
     let data = await cache[guild.id];
     if (!data) {
@@ -186,7 +197,16 @@ async function sendFreeGame (guild) {
         
         console.log("channel exists: " + channel.id);     
     }
-    if (await checkChannel(guild, channel) === true) { channel.send(await createEmbed()); }
+    await getGameData();
+    if (await checkChannel(guild, channel) === true) { await sendMultiple(channel) }
+}
+
+async function sendMultiple (channel){
+    
+    for (var i in game){
+        // create and get embed function? create for before the for function and get for send function
+        channel.send(await createEmbed(i));
+    }
 }
 
 function getChannel (guild){
@@ -229,7 +249,7 @@ async function checkChannel(guild, channel){
         console.log("checking logs");
         const botLog = fetchlogs.entries.find (logs => logs.target.id === bot.user.id);
         console.log("Target Acquired! in " + guild.name + ", could not find channel");
-        botLog.executor.send("Could not find right channel in " + guild.name + ".\nPlease update the channel on your server using the `LL!setChannel` command in the channel you want to use");
+        botLog.executor.send("Could not find right channel in " + guild.name + ".\nPlease update the channel on your server using the `" + prefix + "setChannel` command in the channel you want to use");
         return false;
     }  else {
         console.log(channel.name);
