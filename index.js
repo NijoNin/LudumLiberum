@@ -18,7 +18,7 @@ const prefix = process.env.PREFIX;
 
 var countryLocale = "en-US";
 
-const game = []; //PROBLEM: when bot stays on the push function continously adds new games everytime it pushes when a command is used
+const game = [];
 
 const cache = {};
 
@@ -38,7 +38,7 @@ bot.on('guildCreate', async (guild) => {
         botLog.executor.send("Could not find general channel in " + guild.name + ".\nPlease update the channel on your server using the `LL!setChannel` command in the channel you want to use");
     } else {
         saveToDB(guild, channel);
-        channel.send(await createEmbed());
+        sendMultiple(channel); //Need to Change to sendMultiple
     }
 });
 
@@ -134,24 +134,28 @@ async function getGameData(){
 async function setGameData (res){
     var games = res.Catalog.searchStore.elements;
     // Find specific game
+    //console.log(games);
     var k = 0;
     for (var i in games){
         if (games[i].promotions !== null && games[i].price.totalPrice.discountPrice === 0) {
             // Arrange game info
-            console.log(games[i]);
-            let imgURL;
-            for (var j in games[i].keyImages){
-                if (games[i].keyImages[j].type === "OfferImageWide"){
-                    imgURL = games[i].keyImages[j].url;
+            if (games[i].promotions.promotionalOffers[0] !== undefined){
+
+                console.log(games[i]);
+                let imgURL;
+                for (var j in games[i].keyImages){
+                    if (games[i].keyImages[j].type === "OfferImageWide"){
+                        imgURL = games[i].keyImages[j].url;
+                    }
                 }
+                game.push({
+                    title: games[i].title,
+                    expiryDate: games[i].promotions.promotionalOffers[0].promotionalOffers[0].endDate,
+                    webURL: url + countryLocale + urlExt + games[i].productSlug,
+                    imgURL: imgURL
+                })
+                console.log(game[k++].title + " game object has been created");
             }
-            game.push({
-                title: games[i].title,
-                expiryDate: games[i].promotions.promotionalOffers[0].promotionalOffers[0].endDate,
-                webURL: url + countryLocale + urlExt + games[i].productSlug,
-                imgURL: imgURL
-            })
-            console.log(game[k++].title + " game object has been created");
         }
     }   
 }
@@ -202,7 +206,9 @@ async function sendFreeGame (guild) {
 }
 
 async function sendMultiple (channel){
-    
+    // if guild.role, channel send @guild.role
+    //channel.send()
+    //if(cache[channel.guild.id])
     for (var i in game){
         // create and get embed function? create for before the for function and get for send function
         await channel.send(await createEmbed(i));
@@ -266,7 +272,7 @@ async function setChannel (message){
       return;
     }
     saveToDB(guild, channel);
-    channel.send({"content": "This is now the default channel. Here is the free game of the week:", "embed": await createEmbed()});
+    channel.send({"content": "This is now the default channel. Here is the free game/s of the week:", "embed": await createEmbed()});
 }
 
 function saveToDB (guild, channel){
