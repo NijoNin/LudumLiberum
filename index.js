@@ -38,15 +38,17 @@ bot.on('guildCreate', async (guild) => {
         botLog.executor.send("Could not find general channel in " + guild.name + ".\nPlease update the channel on your server using the `LL!setChannel` command in the channel you want to use");
     } else {
         saveToDB(guild, channel);
+        await getGameData();
         sendMultiple(channel); //Need to Change to sendMultiple
     }
 });
 
-//
-bot.on('channelUpdate', async (newChannel) => {
-    saveToDB(newChannel.guild, newChannel);
-    newChannel.send("Updated default channel");
-});
+// Dont need this function as if ch name changes ID wont change
+// Dont delete for now
+// bot.on('channelUpdate', async (newChannel) => {
+//     saveToDB(newChannel.guild, newChannel);
+//     newChannel.send("Updated default channel");
+// });
 
 bot.on('guildDelete', async (guild) => {
     // remove guild info from db
@@ -105,6 +107,12 @@ bot.on("message", async function(msg) {
         case "g":
             await getGameData();
             sendMultiple(msg.channel);
+            break;
+        case "channel":
+        case "ch":
+            const { guild } = msg;
+            const ch = guild.channels.cache.get(await getChannel(msg.guild));
+            msg.channel.send(`I am currently posting to \` ${ch.name} \` channel`); 
             break;
     }
 });
@@ -272,7 +280,10 @@ async function setChannel (message){
       return;
     }
     saveToDB(guild, channel);
-    channel.send({"content": "This is now the default channel. Here is the free game/s of the week:", "embed": await createEmbed()});
+    // need to fix below to add with send multiple
+    channel.send({"content": "This is now the default channel. Here is the free game/s of the week:"});
+    await getGameData();
+    await sendMultiple(channel);
 }
 
 function saveToDB (guild, channel){
